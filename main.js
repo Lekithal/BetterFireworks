@@ -40,15 +40,12 @@ const randFloat = (min, max) => Math.random() * (max - min) + min
 const randInt = (min, max) => Math.round(randFloat(min, max))
 
 function summonCluster(data, color) {
-    summonFirework(data.position, [7 + randFloat(-2, 2), -5 + randFloat(-4, 4)], false, color, 10);
-    summonFirework(data.position, [-7 + randFloat(-2, 2), -5 + randFloat(-4, 4)], false, color, 10);
-    summonFirework(data.position, [4 + randFloat(-2, 2), -10 + randFloat(-4, 4)], false, color, 10);
-    summonFirework(data.position, [-4 + randFloat(-2, 2), -10 + randFloat(-4, 4)], false, color, 10);
-    summonFirework(data.position, [4 + randFloat(-2, 2), 0 + randFloat(-4, 4)], false, color, 10);
-    summonFirework(data.position, [-4 + randFloat(-2, 2), 0 + randFloat(-4, 4)], false, color, 10);
+    for (let i = 0; i < 10; i++) {
+        summonFirework(data.position, [randFloat(-10, 10), randInt(-15, 4)], false, color, 10);
+    }
 }
 
-function summonFirework(position, velocities, main = true, color = `hsl(${randFloat(0, 360)}, 100%, 50%)`, lifespan = 10) {
+function summonFirework(position, velocities, main = true, color = `hsl(${randFloat(0, 360)}, 100%, 50%)`, lifespan = 10, cluster = false) {
 
     let data = {
         "state": "flying",
@@ -57,7 +54,8 @@ function summonFirework(position, velocities, main = true, color = `hsl(${randFl
         "trail": new Array(5).fill(position),
         "color": color,
         "type": ["clone", "main"][Number(main)],
-        "lifespan": lifespan
+        "lifespan": lifespan,
+        "cluster": cluster
     }
 
     let update = data => {
@@ -110,11 +108,11 @@ function summonFirework(position, velocities, main = true, color = `hsl(${randFl
         if (data.trail.length == 0) {
             if (data.type == "main") {
 
-                if (randInt(1, 5) == 1){
+                if (data.cluster){
                     let value = Number(data.color.split(",")[0].substr(4));
 
                     for (i = 0; i < 5; i++){
-                        summonCluster(data, `hsl(${value + 360 + randFloat(-30, 30)}, 100%, 50%)`)
+                        summonCluster(data, `hsl(${value + 360 + [-60, 30, 0, 30, 60][i]}, 100%, 50%)`)
                     }
 
                 } else {
@@ -143,7 +141,7 @@ function goalClick(data) {
     let v1 = (x - fx) / frames;
     let v2 = (y - fy) / frames - (frames - 1) / 2;
 
-    summonFirework([fx, fy], [v1, v2], true, `hsl(${randFloat(0, 360)}, 100%, 50%)`, frames);
+    summonFirework([fx, fy], [v1, v2], true, `hsl(${randFloat(0, 360)}, 100%, 50%)`, frames, randInt(1, 5) == 1);
 }
 
 addEventListener("mousedown", goalClick)
