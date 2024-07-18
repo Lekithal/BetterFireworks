@@ -39,6 +39,15 @@ function newEntity(data, update) {
 const randFloat = (min, max) => Math.random() * (max - min) + min
 const randInt = (min, max) => Math.round(randFloat(min, max))
 
+function summonCluster(data, color) {
+    summonFirework(data.position, [7 + randFloat(-2, 2), -5 + randFloat(-4, 4)], false, color, 10);
+    summonFirework(data.position, [-7 + randFloat(-2, 2), -5 + randFloat(-4, 4)], false, color, 10);
+    summonFirework(data.position, [4 + randFloat(-2, 2), -10 + randFloat(-4, 4)], false, color, 10);
+    summonFirework(data.position, [-4 + randFloat(-2, 2), -10 + randFloat(-4, 4)], false, color, 10);
+    summonFirework(data.position, [4 + randFloat(-2, 2), 0 + randFloat(-4, 4)], false, color, 10);
+    summonFirework(data.position, [-4 + randFloat(-2, 2), 0 + randFloat(-4, 4)], false, color, 10);
+}
+
 function summonFirework(position, velocities, main = true, color = `hsl(${randFloat(0, 360)}, 100%, 50%)`, lifespan = 10) {
 
     let data = {
@@ -100,12 +109,17 @@ function summonFirework(position, velocities, main = true, color = `hsl(${randFl
 
         if (data.trail.length == 0) {
             if (data.type == "main") {
-                summonFirework(data.position, [7, -5], false, data.color, 10);
-                summonFirework(data.position, [-7, -5], false, data.color, 10);
-                summonFirework(data.position, [4, -10], false, data.color, 10);
-                summonFirework(data.position, [-4, -10], false, data.color, 10);
-                summonFirework(data.position, [4, 0], false, data.color, 10);
-                summonFirework(data.position, [-4, 0], false, data.color, 10);
+
+                if (randInt(1, 5) == 1){
+                    let value = Number(data.color.split(",")[0].substr(4));
+
+                    for (i = 0; i < 5; i++){
+                        summonCluster(data, `hsl(${value + 360 + randFloat(-30, 30)}, 100%, 50%)`)
+                    }
+
+                } else {
+                    summonCluster(data, data.color);
+                }
             }
 
             return false;
@@ -132,6 +146,6 @@ function goalClick(data) {
     summonFirework([fx, fy], [v1, v2], true, `hsl(${randFloat(0, 360)}, 100%, 50%)`, frames);
 }
 
-canvas.addEventListener("mousedown", goalClick)
+addEventListener("mousedown", goalClick)
 
 draw();
